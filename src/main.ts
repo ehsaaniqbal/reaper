@@ -1,32 +1,22 @@
-import { PlaywrightCrawler, Dataset } from "crawlee";
+import express from "express";
+import { reaper } from "./reaper.ts";
 
-// PlaywrightCrawler crawls the web using a headless
-// browser controlled by the Playwright library.
-const crawler = new PlaywrightCrawler({
-  // Use the requestHandler to process each of the crawled pages.
-  async requestHandler({ request, page, log }) {
-    const description =
-      (await page.locator("#description").nth(1).textContent()) ||
-      "no description";
-    const title = await page.title();
+const PORT = process.env.PORT || 4000;
 
-    for (const li of await page
-      .locator("#link-list-container")
-      .getByRole("link")
-      .all()) {
-      const link = await li.getAttribute("href");
-      const text = await li.textContent();
-      log.info(`${text} ${link}`);
-    }
+async function main() {
+  const app = express();
 
-    log.info(`Title of ${request.loadedUrl} is '${title}'`);
-    log.info(description);
+  app.use(express.json());
 
-    // Save results as JSON to ./storage/datasets/default
-    await Dataset.pushData({ title, url: request.loadedUrl });
-  },
-  // headless: false,
-});
+  app.post("/", async (req, res) => {
+    console.log(req.body);
+    const urls: string[] = req.body?.urls;
+    const channels = await reaper(urls);
 
-// Add first URL to the queue and start the crawl.
-await crawler.run(["https://www.youtube.com/@lexfridman/about"]);
+    res.json(channels);
+  });
+
+  app.listen(PORT, () => console.log(`server running on PORT: ${PORT}`));
+}
+
+main().catch((error) => console.error("server exception:", error));
