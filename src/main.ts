@@ -1,5 +1,5 @@
 import express from "express";
-import { reaper } from "./reaper.ts";
+import { reaper } from "./reaper.js";
 
 const PORT = process.env.PORT || 4000;
 
