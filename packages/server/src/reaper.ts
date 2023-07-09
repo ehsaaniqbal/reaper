@@ -1,18 +1,19 @@
 import { PlaywrightCrawler } from "crawlee";
 
-type channel = {
+type Channel = {
   id?: string;
   name?: string;
   description?: string;
   links?: { name?: string; url?: string }[];
+  channel_url?: string;
 };
 
 export async function reaper(urls: string[]) {
-  const channels: channel[] = [];
+  const channels: Channel[] = [];
 
   const crawler = new PlaywrightCrawler({
     async requestHandler({ page, log }) {
-      const channel: channel = { links: [] };
+      const channel: Channel = { links: [] };
 
       // Extract channel info
       const title = await page.title();
@@ -53,6 +54,7 @@ export async function reaper(urls: string[]) {
       channel.id = id;
       channel.name = name;
       channel.description = description;
+      channel.channel_url = page.url();
       channels.push(channel);
 
       log.info(`Reaped ${title}`);

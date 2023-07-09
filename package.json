@@ -1,27 +1,17 @@
 {
-  "name": "reaper",
-  "version": "0.0.1",
-  "type": "module",
-  "description": "your unfriendly neighbourhood scraper",
-  "dependencies": {
-    "crawlee": "^3.0.0",
-    "express": "^4.18.2",
-    "playwright": "*"
-  },
-  "devDependencies": {
-    "@apify/tsconfig": "^0.1.0",
-    "@types/express": "^4.17.17",
-    "@types/node": "^18.0.0",
-    "ts-node": "^10.8.0",
-    "typescript": "^5.0.0"
-  },
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "start": "npm run start:dev",
-    "start:prod": "node dist/main.js",
-    "start:dev": "ts-node-esm -T src/main.ts",
-    "build": "tsc",
-    "test": "echo \"Error: oops, the actor has no tests yet, sad!\" && exit 1"
+    "setup": "npm --prefix packages/web-client install && npm --prefix packages/server install",
+    "build": "npm --prefix packages/web-client run build && npm --prefix packages/server run build",
+    "start:web-client": "npm --prefix packages/web-client run dev",
+    "start:server": "npm --prefix packages/server start:dev"
   },
-  "author": "Ehsaan",
-  "license": "ISC"
+  "dependencies": {},
+  "devDependencies": {
+    "lerna": "^7.1.1"
+  }
 }
