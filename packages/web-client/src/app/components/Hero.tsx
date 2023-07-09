@@ -41,11 +41,11 @@ const Hero = () => {
     };
 
     postData.urls.forEach((url, index, array) => {
-      let newURL = url;
+      let newURL = url.trim();
       if (!new URL(url).pathname.includes("/about")) {
         newURL = url.endsWith("/") ? `${url}about})` : `${url}/about`;
       }
-      array[index] = newURL.trim();
+      array[index] = newURL;
     });
 
     try {
