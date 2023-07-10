@@ -12,6 +12,7 @@ import Result, { Channel } from "./Result";
 const Hero = () => {
   const [error, setError] = useState("");
   const [value, setValue] = useState("");
+  const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<Channel[]>([]);
 
@@ -22,9 +23,10 @@ const Hero = () => {
     setValue(e.target.value);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     setLoading(true);
-
     e.preventDefault();
 
     const regex = /^(?:\s*https?:\/\/\S+\s*,\s*)*\s*https?:\/\/\S+\s*$/gm;
@@ -64,8 +66,9 @@ const Hero = () => {
       }
 
       const data = await response.json();
-      if (data.length > 0) {
-        setResults(data);
+      if (data?.channels.length > 0) {
+        setResults(data.channels);
+        setId(data?.id);
       } else {
         setError("Please enter a valid URL");
       }
@@ -75,6 +78,58 @@ const Hero = () => {
       setLoading(false);
       setError("Failed to scrape!");
       console.error("Error:", error);
+    }
+  };
+
+  const handleExport = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    setLoading(true);
+    e.preventDefault();
+
+    try {
+      if (id.length === 0) {
+        setLoading(false);
+        setToast({
+          type: "error",
+          text: "Failed to export. Try again later",
+        });
+
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/download/${id}`
+      );
+
+      if (!response.ok) {
+        setLoading(false);
+        setToast({
+          type: "error",
+          text: "Failed to export. Try again later",
+        });
+        return;
+      }
+
+      const blob = new Blob([await response.blob()], {
+        type: "application/vnd.ms-excel",
+      });
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = downloadUrl;
+      a.download = `${id}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setToast({
+        type: "error",
+        text: "Failed to export. Try again later",
+      });
+      console.error("failed to export:", error);
     }
   };
 
@@ -118,6 +173,11 @@ const Hero = () => {
           </Button>
         </div>
         <Spacer h={1} />
+        {id.length !== 0 && (
+          <Button loading={loading} onClick={handleExport}>
+            Export to spreadsheet
+          </Button>
+        )}
       </div>
       <Grid.Container
         className="pt-10 max-w-2xl"

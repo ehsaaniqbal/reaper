@@ -1,6 +1,6 @@
 import { PlaywrightCrawler } from "crawlee";
 
-type Channel = {
+export type Channel = {
   id?: string;
   name?: string;
   description?: string;
@@ -8,7 +8,7 @@ type Channel = {
   channel_url?: string;
 };
 
-export async function reaper(urls: string[]) {
+export async function reaper(urls: string[]): Promise<Channel[]> {
   const channels: Channel[] = [];
 
   const crawler = new PlaywrightCrawler({

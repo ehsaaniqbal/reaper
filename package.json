@@ -8,7 +8,7 @@
     "setup": "npm --prefix packages/web-client install && npm --prefix packages/server install",
     "build": "npm --prefix packages/web-client run build && npm --prefix packages/server run build",
     "start:web-client": "npm --prefix packages/web-client run dev",
-    "start:server": "npm --prefix packages/server start:dev"
+    "start:server": "npm --prefix packages/server start"
   },
   "dependencies": {},
   "devDependencies": {
