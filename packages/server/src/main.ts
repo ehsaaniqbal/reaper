@@ -2,7 +2,7 @@ import express from "express";
 import { Channel, reaper } from "./reaper.js";
 import cors from "cors";
 import { nanoid } from "nanoid/async";
-import { exportToXLSX } from "./utils.js";
+import { createTempDirectory, exportToXLSX } from "./utils.js";
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 
@@ -73,7 +73,9 @@ async function main() {
     }
   });
 
-  app.listen(PORT, () => console.log(`server running on PORT: ${PORT}`));
+  createTempDirectory();
+
+  app.listen(PORT, () => console.log(`Server running on PORT: ${PORT}`));
 }
 
-main().catch((error) => console.error("server exception:", error));
+main().catch((error) => console.error("Server exception:", error));
